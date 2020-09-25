@@ -2,16 +2,28 @@
 {
 	public static class DoubleCollectionExtensions
     {
-        public static float[] ToArray(this DoubleCollection doubleCollection)
+        public static double[] ToArray(this DoubleCollection doubleCollection)
         {
-            float[] array = new float[doubleCollection.Count];
-
-            for (int i = 0; i < doubleCollection.Count; i++)
+            if (doubleCollection == null || doubleCollection.Count == 0)
+                return new double[0];
+            else
             {
-                array[i] = (float)doubleCollection[i];
-            }
+                double[] array;
 
-            return array;
+                if (doubleCollection.Count % 2 == 0)
+                {
+                    array = new double[doubleCollection.Count];
+                    doubleCollection.CopyTo(array, 0);
+                }
+                else
+                {
+                    array = new double[2 * doubleCollection.Count];
+                    doubleCollection.CopyTo(array, 0);
+                    doubleCollection.CopyTo(array, doubleCollection.Count);
+                }
+
+                return array;
+            }
         }
     }
 }
