@@ -4,7 +4,7 @@ using System.Text;
 using NUnit.Framework;
 
 
-namespace Xamarin.Platform.Handlers.UnitTests
+namespace Xamarin.Platform.Handlers.Tests
 {
 	public class HandlerStub : AbstractViewHandler<Forms.Button, object>
 	{

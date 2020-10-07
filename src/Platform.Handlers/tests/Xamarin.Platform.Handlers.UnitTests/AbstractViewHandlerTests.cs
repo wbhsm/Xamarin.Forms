@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using NUnit.Framework;
 
-namespace Xamarin.Platform.Handlers.UnitTests
+namespace Xamarin.Platform.Handlers.Tests
 {
 
 	[TestFixture]
