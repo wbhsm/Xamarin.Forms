@@ -1,7 +1,4 @@
-﻿using System;
-using Xamarin.Forms;
-
-#if __IOS__
+﻿#if __IOS__
 using NativeView = UIKit.UIButton;
 #elif __MACOS__
 using NativeView = AppKit.NSButton;
@@ -36,7 +33,7 @@ namespace Xamarin.Platform.Handlers
 		}
 
 #if MONOANDROID
-		protected override NativeView CreateView() => new NativeView(this.Context);
+		protected override NativeView CreateView() => new NativeView(Context);
 #else
 		protected override NativeView CreateView() => new NativeView();
 #endif
