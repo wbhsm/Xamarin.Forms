@@ -3,12 +3,15 @@ using System.ComponentModel;
 using Android.Content;
 using Android.Graphics.Drawables;
 using Android.Views;
+using Xamarin.Platform;
 
 namespace Xamarin.Forms.Platform.Android
 {
 	public class BoxRenderer : VisualElementRenderer<BoxView>
 	{
 		bool _disposed;
+
+		[PortHandler]
 		GradientDrawable _backgroundDrawable;
 
 		readonly MotionEventHelper _motionEventHelper = new MotionEventHelper();
@@ -73,6 +76,7 @@ namespace Xamarin.Forms.Platform.Android
 			UpdateBoxBackground();
 		}
 
+		[PortHandler]
 		void UpdateBoxBackground()
 		{
 			Brush brushToSet = Element.Background;
@@ -142,6 +146,7 @@ namespace Xamarin.Forms.Platform.Android
 			base.Dispose(disposing);
 		}
 
+		[PortHandler]
 		void UpdateCornerRadius()
 		{
 			var cornerRadius = Element.CornerRadius;
