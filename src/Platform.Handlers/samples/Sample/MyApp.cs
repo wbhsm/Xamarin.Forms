@@ -34,6 +34,7 @@ namespace Sample
 
 			verticalStack.Add(horizontalStack);
 			verticalStack.Add(new ProgressBar { Progress = 0.5, ProgressColor = Color.Purple });
+			verticalStack.Add(new Slider());
 
 			return verticalStack;
 		}
