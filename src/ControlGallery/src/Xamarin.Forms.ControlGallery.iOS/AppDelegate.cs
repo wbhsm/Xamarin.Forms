@@ -155,7 +155,7 @@ namespace Xamarin.Forms.ControlGallery.iOS
 			Forms.Init();
 			FormsMaps.Init();
 			FormsHandlers.InitHandlers();
-			FormsMaterial.Init();
+			//FormsMaterial.Init();
 
 			Forms.ViewInitialized += (object sender, ViewInitializedEventArgs e) =>
 			{
