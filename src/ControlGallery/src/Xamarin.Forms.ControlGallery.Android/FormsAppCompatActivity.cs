@@ -1,6 +1,4 @@
-﻿#if !FORMS_APPLICATION_ACTIVITY && !PRE_APPLICATION_CLASS
-
-using Android.App;
+﻿using Android.App;
 using Android.Content;
 using Android.Content.PM;
 using Android.OS;
@@ -11,6 +9,7 @@ using Xamarin.Forms.Platform.Android;
 using Xamarin.Forms.Platform.Android.AppLinks;
 using System.Linq;
 using Xamarin.Forms.Internals;
+using RegistrarHandlers = Xamarin.Platform.Registrar;
 
 namespace Xamarin.Forms.ControlGallery.Android
 {
@@ -48,8 +47,9 @@ namespace Xamarin.Forms.ControlGallery.Android
 			Forms.SetFlags("UseLegacyRenderers");
 #endif
 			Forms.Init(this, bundle);
-
+			FormsHandlers.InitHandlers();
 			FormsMaps.Init(this, bundle);
+
 			//FormsMaterial.Init(this, bundle);
 			AndroidAppLinks.Init(this);
 			Forms.ViewInitialized += (sender, e) => {
@@ -142,5 +142,3 @@ namespace Xamarin.Forms.ControlGallery.Android
 		}
 	}
 }
-
-#endif

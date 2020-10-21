@@ -260,7 +260,7 @@ namespace Xamarin.Forms
 		)
 		{
 			Profile.FrameBegin();
-
+			Registrar.RegisterRendererToHandlerShim(RendererToHandlerShim.CreateShim);
 			if (!IsInitialized)
 			{
 				// Only need to get this once; it won't change

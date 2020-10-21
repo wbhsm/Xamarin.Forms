@@ -231,10 +231,44 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (renderer == null)
 			{
-				renderer = Internals.Registrar.Registered.GetHandlerForObject<IVisualElementRenderer>(element) ?? new DefaultRenderer();
+				Xamarin.Platform.IViewHandler handler = null;
+
+				try
+				{
+					handler = Xamarin.Platform.Registrar.Handlers.GetHandler(element.GetType());
+				}
+				catch
+				{
+					// TODO define better catch response or define if this is needed?
+				}
+
+				if (handler == null)
+				{
+					renderer = Internals.Registrar.Registered.GetHandlerForObject<IVisualElementRenderer>(element)
+										?? new DefaultRenderer();
+				}
+				else if (handler is RendererToHandlerShim shim)
+				{
+					renderer = shim.VisualElementRenderer;
+
+					if (renderer == null)
+					{
+						renderer = Internals.Registrar.Registered.GetHandlerForObject<IVisualElementRenderer>(element)
+										?? new DefaultRenderer();
+
+						shim.SetupRenderer(renderer);
+					}
+				}
+				else if (handler is IVisualElementRenderer ver)
+					renderer = ver;
+				else if (handler is Xamarin.Platform.INativeViewHandler vh)
+				{
+					renderer = new HandlerToRendererShim(vh);
+				}
 			}
 
 			renderer.SetElement(element);
+
 			return renderer;
 		}
 

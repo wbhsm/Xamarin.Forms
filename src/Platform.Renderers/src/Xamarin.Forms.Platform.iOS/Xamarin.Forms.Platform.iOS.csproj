@@ -170,6 +170,7 @@
     <Compile Include="Extensions\LabelExtensions.cs" />
     <Compile Include="Extensions\VisualElementExtensions.cs" />
     <Compile Include="Flags.cs" />
+    <Compile Include="HandlerToRendererShim.cs" />
     <Compile Include="IOSDeviceInfo.cs" />
     <Compile Include="LinkerSafeAttribute.cs" />
     <Compile Include="ModalWrapper.cs" />
@@ -230,6 +231,7 @@
     <Compile Include="Renderers\ButtonElementManager.cs" />
     <Compile Include="Renderers\IImageVisualElementRenderer.cs" />
     <Compile Include="Renderers\ImageButtonRenderer.cs" />
+    <Compile Include="RendererToHandlerShim.cs" />
     <Compile Include="Resources\StringResources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

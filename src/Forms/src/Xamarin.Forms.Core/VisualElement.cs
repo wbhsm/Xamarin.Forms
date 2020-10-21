@@ -854,6 +854,7 @@ namespace Xamarin.Forms
 
 		protected virtual void OnSizeAllocated(double width, double height)
 		{
+			Handler?.SetFrame(Bounds);
 		}
 
 		[Obsolete("OnSizeRequest is obsolete as of version 2.2.0. Please use OnMeasure instead.")]
