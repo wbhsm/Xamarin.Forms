@@ -18,8 +18,8 @@ namespace Sample
 
 			RegistrarHandlers.Handlers.Register<ActivityIndicator, ActivityIndicatorHandler>();
 			RegistrarHandlers.Handlers.Register<Button, ButtonHandler>();
-			RegistrarHandlers.Handlers.Register<Slider, SliderHandler>();
 			RegistrarHandlers.Handlers.Register<Label, LabelHandler>();
+			RegistrarHandlers.Handlers.Register<Slider, SliderHandler>();
 
 			RegistrarHandlers.Handlers.Register<HorizontalStackLayout, LayoutHandler>();
 			RegistrarHandlers.Handlers.Register<FlexLayout, LayoutHandler>();
