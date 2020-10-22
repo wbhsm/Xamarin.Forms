@@ -27,6 +27,17 @@ namespace Xamarin.Forms.Platform.iOS
 				}
 #endif
 				var view = bindable as VisualElement;
+
+				if (view is Xamarin.Platform.IView iView)
+				{
+					if (iView.Handler == null)
+						iView.Handler = new RendererToHandlerShim((IVisualElementRenderer)newvalue);
+				}
+				else if (view != null)
+				{
+					throw new Exception($"{view} must implement: {nameof(Xamarin.Platform.IView)}");
+				}
+
 				if (view != null)
 					view.IsPlatformEnabled = newvalue != null;
 			});

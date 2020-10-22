@@ -91,7 +91,6 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		}
 
 		Page Page { get; set; }
-		Xamarin.Platform.IViewHandler PageHandler => ((Xamarin.Platform.IView)Page)?.Handler;
 
 		IPageController CurrentPageController => _navModel.CurrentPage;
 
