@@ -3,7 +3,7 @@ using Xamarin.Platform;
 
 namespace Sample
 {
-	public class BoxView : View, IBox
+	public class BoxView : Xamarin.Forms.View, IBox
 	{
 		public Color Color { get; set; }
 

@@ -12,6 +12,7 @@ namespace Xamarin.Platform
 		const float HalfPI = PI * .5f;
 		const float TwoPI = PI * 2;
 
+		Size _size;
 		Color _color;
 		CornerRadius _cornerRadius;
 
@@ -24,7 +25,17 @@ namespace Xamarin.Platform
 
 		public NativeBoxView()
 		{
-		
+			Opaque = false;
+		}
+
+		public Size Size
+		{
+			get { return _size; }
+			set
+			{
+				_size = value;
+				SetSize(_size);
+			}
 		}
 
 		public Color Color
@@ -60,6 +71,14 @@ namespace Xamarin.Platform
 			bezierPath.Fill();
 
 			base.Draw(rect);
+		}
+
+		void SetSize(Size size)
+		{
+			RectangleF frame = Frame;
+			Frame = new RectangleF(frame.X, frame.Y, size.Width, size.Height);
+
+			SetNeedsDisplay();
 		}
 
 		void SetColor(Color color)
