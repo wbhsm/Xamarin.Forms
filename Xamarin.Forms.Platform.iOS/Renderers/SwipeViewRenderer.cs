@@ -1014,7 +1014,6 @@ namespace Xamarin.Forms.Platform.iOS
 			_isResettingSwipe = true;
 			_isSwiping = false;
 			_swipeThreshold = 0;
-			_swipeDirection = null;
 
 			var resetAnimationDuration = animated ? SwipeAnimationDuration : 0;
 
@@ -1022,10 +1021,40 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				if (_originalBounds != CGRect.Empty)
 					_contentView.Frame = new CGRect(_originalBounds.X, _originalBounds.Y, _originalBounds.Width, _originalBounds.Height);
+
+				if (_swipeTransitionMode == SwipeTransitionMode.Drag)
+				{
+					_swipeOffset = GetSwipeThreshold();
+					double swipeThreshold = _swipeOffset;
+					var actionBounds = _actionView.Bounds;
+					double actionSize;
+
+					switch (_swipeDirection)
+					{
+						case SwipeDirection.Left:
+							actionSize = GetSwipeItemsWidth(SwipeDirection.Left);
+							_actionView.Frame = new CGRect(actionSize + swipeThreshold, actionBounds.Y, actionBounds.Width, actionBounds.Height);
+							break;
+						case SwipeDirection.Right:
+							actionSize = GetSwipeItemsWidth(SwipeDirection.Right);
+							_actionView.Frame = new CGRect(-actionSize - swipeThreshold, actionBounds.Y, actionBounds.Width, actionBounds.Height);
+							break;
+						case SwipeDirection.Up:
+							actionSize = _contentView.Frame.Height;
+							_actionView.Frame = new CGRect(actionBounds.X, actionSize + Math.Abs(swipeThreshold), actionBounds.Width, actionBounds.Height);
+							break;
+						case SwipeDirection.Down:
+							actionSize = _contentView.Frame.Height;
+							_actionView.Frame = new CGRect(actionBounds.X, -actionSize - Math.Abs(swipeThreshold), actionBounds.Width, actionBounds.Height);
+							break;
+					}
+
+				}
 			},
 			() =>
 			{
 				DisposeSwipeItems();
+				_swipeDirection = null;
 				_isResettingSwipe = false;
 			});
 		}

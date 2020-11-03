@@ -925,44 +925,49 @@ namespace Xamarin.Forms.Platform.Android
 			if (_contentView == null)
 				return;
 
-			var resetAnimationDuration = animated ? SwipeAnimationDuration : 0;
-
 			_isResettingSwipe = true;
 			_isSwiping = false;
 			_swipeThreshold = 0;
+			int actionSize = 0;
+
+			var resetAnimationDuration = animated ? SwipeAnimationDuration : 0;
+			float swipeThreshold = Math.Abs(_context.ToPixels(_swipeOffset));
 
 			switch (_swipeDirection)
 			{
 				case SwipeDirection.Left:
 				case SwipeDirection.Right:
+					_contentView.Animate().TranslationX(0).SetDuration(resetAnimationDuration).WithEndAction(new Java.Lang.Runnable(() => ResetSwipeEndAction()));
 
-					_swipeDirection = null;
-
-					_contentView.Animate().TranslationX(0).SetDuration(resetAnimationDuration).WithEndAction(new Java.Lang.Runnable(() =>
+					if (_swipeTransitionMode == SwipeTransitionMode.Drag)
 					{
-						if (_swipeDirection == null)
-							DisposeSwipeItems();
-
-						_isResettingSwipe = false;
-					}));
+						actionSize = (int)_context.ToPixels(GetSwipeItemsWidth(_swipeDirection));
+						var actionTranslationX = _swipeDirection == SwipeDirection.Left ? (actionSize + swipeThreshold) : (-actionSize - swipeThreshold);
+						_actionView.Animate().TranslationX(actionTranslationX).SetDuration(resetAnimationDuration);
+					}
 					break;
 				case SwipeDirection.Up:
 				case SwipeDirection.Down:
+					_contentView.Animate().TranslationY(0).SetDuration(resetAnimationDuration).WithEndAction(new Java.Lang.Runnable(() => ResetSwipeEndAction()));
 
-					_swipeDirection = null;
-
-					_contentView.Animate().TranslationY(0).SetDuration(resetAnimationDuration).WithEndAction(new Java.Lang.Runnable(() =>
+					if (_swipeTransitionMode == SwipeTransitionMode.Drag)
 					{
-						if (_swipeDirection == null)
-							DisposeSwipeItems();
-
-						_isResettingSwipe = false;
-					}));
+						actionSize = _contentView.Height;
+						var actionTranslationY = _swipeDirection == SwipeDirection.Up ? (actionSize + Math.Abs(swipeThreshold)) : (-actionSize - Math.Abs(swipeThreshold));
+						_actionView.Animate().TranslationY(actionTranslationY).SetDuration(resetAnimationDuration);
+					}
 					break;
 				default:
 					_isResettingSwipe = false;
 					break;
 			}
+		}
+
+		void ResetSwipeEndAction()
+		{
+			_swipeDirection = null;
+			DisposeSwipeItems();
+			_isResettingSwipe = false;
 		}
 
 		void SwipeToThreshold(bool animated = true)
@@ -1218,10 +1223,14 @@ namespace Xamarin.Forms.Platform.Android
 			return swipeThreshold;
 		}
 
-		double GetSwipeItemsWidth(SwipeDirection swipeDirection)
+		double GetSwipeItemsWidth(SwipeDirection? swipeDirection)
 		{
 			double swipeItemsWidth = 0;
-			var swipeItems = GetSwipeItemsByDirection(swipeDirection);
+
+			if (swipeDirection == null || !swipeDirection.HasValue)
+				return swipeItemsWidth;
+
+			var swipeItems = GetSwipeItemsByDirection(swipeDirection.Value);
 
 			foreach (var swipeItem in swipeItems)
 			{
