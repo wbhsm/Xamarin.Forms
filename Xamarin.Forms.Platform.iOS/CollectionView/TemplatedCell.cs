@@ -14,16 +14,21 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected nfloat ConstrainedDimension;
 
-		DataTemplate _currentTemplate;
+		public DataTemplate CurrentTemplate { get; private set; }
 
 		// Keep track of the cell size so we can verify whether a measure invalidation 
 		// actually changed the size of the cell
 		Size _size;
 
+		internal CGSize CurrentSize => _size.ToSizeF();
+
 		[Export("initWithFrame:")]
 		[Internals.Preserve(Conditional = true)]
 		protected TemplatedCell(CGRect frame) : base(frame)
 		{
+
+			System.Diagnostics.Debug.WriteLine($">>>>>> TemplatedCell constructor");
+
 		}
 
 		internal IVisualElementRenderer VisualElementRenderer { get; private set; }
@@ -51,8 +56,17 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			var preferredAttributes = base.PreferredLayoutAttributesFittingAttributes(layoutAttributes);
 
+			var preferredSize = preferredAttributes.Frame.Size;
+			var elementSize = VisualElementRenderer.Element.Bounds.Size;
+
+			if (SizesAreSame(preferredSize, elementSize) 
+				&& AttributesConsistentWithConstrainedDimension(preferredAttributes))
+			{
+				return preferredAttributes;
+			}
+
 			// Measure this cell (including the Forms element) if there is no constrained size
-			var size = ConstrainedSize == default(CGSize) ? Measure() : ConstrainedSize;
+			var size = ConstrainedSize == default ? Measure() : ConstrainedSize;
 
 			// Update the size of the root view to accommodate the Forms element
 			var nativeView = VisualElementRenderer.NativeView;
@@ -76,12 +90,13 @@ namespace Xamarin.Forms.Platform.iOS
 			// Run this through the extension method in case it's really a DataTemplateSelector
 			var itemTemplate = template.SelectDataTemplate(bindingContext, itemsView);
 
-			if (itemTemplate != _currentTemplate)
+			if (itemTemplate != CurrentTemplate)
 			{
 				// Remove the old view, if it exists
 				if (oldElement != null)
 				{
 					oldElement.MeasureInvalidated -= MeasureInvalidated;
+					oldElement.BindingContext = null;
 					itemsView.RemoveLogicalChild(oldElement);
 					ClearSubviews();
 					_size = Size.Zero;
@@ -89,17 +104,6 @@ namespace Xamarin.Forms.Platform.iOS
 
 				// Create the content and renderer for the view 
 				var view = itemTemplate.CreateContent() as View;
-
-				// Prevents the use of default color when there are VisualStateManager with Selected state setting the background color
-				// First we check whether the cell has the default selected background color; if it does, then we should check
-				// to see if the cell content is the VSM to set a selected color 
-				if (SelectedBackgroundView.BackgroundColor == ColorExtensions.Gray && IsUsingVSMForSelectionColor(view))
-				{
-					SelectedBackgroundView = new UIView
-					{
-						BackgroundColor = UIColor.Clear
-					};
-				}
 
 				// Set the binding context _before_ we create the renderer; that way, it's available during OnElementChanged
 				view.BindingContext = bindingContext;
@@ -112,17 +116,37 @@ namespace Xamarin.Forms.Platform.iOS
 				// if we do it before, the element briefly inherits the ItemsView's bindingcontext and we 
 				// emit a bunch of needless binding errors
 				itemsView.AddLogicalChild(view);
+
+				// Prevents the use of default color when there are VisualStateManager with Selected state setting the background color
+				// First we check whether the cell has the default selected background color; if it does, then we should check
+				// to see if the cell content is the VSM to set a selected color 
+				if (SelectedBackgroundView.BackgroundColor == ColorExtensions.Gray && IsUsingVSMForSelectionColor(view))
+				{
+					SelectedBackgroundView = new UIView
+					{
+						BackgroundColor = UIColor.Clear
+					};
+				}
 			}
 			else
 			{
-				// Same template, different data
-				var currentElement = VisualElementRenderer?.Element;
+				// Same template
+				if (oldElement != null)
+				{
+					if (oldElement.BindingContext == null || !(oldElement.BindingContext.Equals(bindingContext)))
+					{
+						// If the data is different, update it
 
-				if (currentElement != null)
-					currentElement.BindingContext = bindingContext;
+						// Unhook the MeasureInvalidated handler, otherwise it'll fire for every invalidation during the 
+						// BindingContext change
+						oldElement.MeasureInvalidated -= MeasureInvalidated;
+						oldElement.BindingContext = bindingContext;
+						oldElement.MeasureInvalidated += MeasureInvalidated;
+					}
+				}
 			}
 
-			_currentTemplate = itemTemplate;
+			CurrentTemplate = itemTemplate;
 		}
 
 		void SetRenderer(IVisualElementRenderer renderer)
@@ -146,7 +170,9 @@ namespace Xamarin.Forms.Platform.iOS
 
 			nativeView.Frame = new CGRect(0, 0, width, height);
 
-			VisualElementRenderer.Element.Layout(nativeView.Frame.ToRectangle());
+			var rectangle = nativeView.Frame.ToRectangle();
+			VisualElementRenderer.Element.Layout(rectangle);
+			_size = rectangle.Size;
 		}
 
 		void ClearSubviews()
@@ -155,6 +181,16 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				ContentView.Subviews[n].RemoveFromSuperview();
 			}
+		}
+
+		internal void UseContent(TemplatedCell measurementCell)
+		{
+			// Copy all the content and values from the measurement cell 
+			ConstrainedDimension = measurementCell.ConstrainedDimension;
+			ConstrainedSize = measurementCell.ConstrainedSize;
+			CurrentTemplate = measurementCell.CurrentTemplate;
+			_size = measurementCell._size;
+			SetRenderer(measurementCell.VisualElementRenderer);
 		}
 
 		bool IsUsingVSMForSelectionColor(View view)
@@ -224,6 +260,25 @@ namespace Xamarin.Forms.Platform.iOS
 		protected void OnContentSizeChanged()
 		{
 			ContentSizeChanged?.Invoke(this, EventArgs.Empty);
+		}
+
+		protected abstract bool AttributesConsistentWithConstrainedDimension(UICollectionViewLayoutAttributes attributes);
+
+		bool SizesAreSame(CGSize preferredSize, Size elementSize)
+		{
+			const double tolerance = 0.000001;
+
+			if (Math.Abs(preferredSize.Height - elementSize.Height) > tolerance)
+			{
+				return false;
+			}
+
+			if (Math.Abs(preferredSize.Width - elementSize.Width) > tolerance)
+			{
+				return false;
+			}
+
+			return true;
 		}
 	}
 }

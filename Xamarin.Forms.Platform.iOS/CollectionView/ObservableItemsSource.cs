@@ -173,7 +173,9 @@ namespace Xamarin.Forms.Platform.iOS
 			var startIndex = args.NewStartingIndex > -1 ? args.NewStartingIndex : IndexOf(args.NewItems[0]);
 
 			// Queue up the updates to the UICollectionView
-			BatchUpdate(() => _collectionView.InsertItems(CreateIndexesFrom(startIndex, count)));
+			BatchUpdate(() => 
+				_collectionView.InsertItems(CreateIndexesFrom(startIndex, count))
+			);
 		}
 
 		async Task Remove(NotifyCollectionChangedEventArgs args)
