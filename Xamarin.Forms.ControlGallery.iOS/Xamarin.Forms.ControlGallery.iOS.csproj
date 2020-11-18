@@ -145,6 +145,7 @@
     <Compile Include="CustomEffects\FooEffect.cs" />
     <Compile Include="_10337CustomRenderer.cs" />
     <Compile Include="_11132CustomRenderer.cs" />
+    <Compile Include="CustomRenderers\CustomMapRenderer.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Xamarin.Forms.Controls\Xamarin.Forms.Controls.csproj">
@@ -369,6 +370,7 @@
     <BundleResource Include="Resources\xamarinstore.jpg" />
     <BundleResource Include="Resources\cardBackground%402x.png" />
     <BundleResource Include="Resources\Fonts\fa-solid-900.ttf" />
+    <BundleResource Include="Resources\Waypoint.png" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
