@@ -17,10 +17,9 @@
     <AndroidApplication>true</AndroidApplication>
     <AndroidResgenFile>Resources\Resource.Designer.cs</AndroidResgenFile>
     <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
-    <AndroidTargetFrameworkVersion Condition="'$(AndroidTargetFrameworkVersion)' == ''">v10.0</AndroidTargetFrameworkVersion>
+    <AndroidTargetFrameworkVersion Condition="'$(AndroidTargetFrameworkVersion)' == ''">v11.0</AndroidTargetFrameworkVersion>
     <TargetFrameworkVersion>$(AndroidTargetFrameworkVersion)</TargetFrameworkVersion>
-    <AndroidManifest Condition="$(AndroidTargetFrameworkVersion) == 'v10.0.99'">Properties\AndroidManifest30.xml</AndroidManifest>
-    <AndroidManifest Condition="$(AndroidTargetFrameworkVersion) == 'v10.0'">Properties\AndroidManifest.xml</AndroidManifest>
+    <AndroidManifest Condition="$(AndroidTargetFrameworkVersion) == 'v11.0'">Properties\AndroidManifest.xml</AndroidManifest>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
     <NuGetPackageImportStamp>
@@ -31,10 +30,9 @@
   <PropertyGroup>
     <!-- default locally to using fast renderers but if we're running on CI don't set a value for ANDROID_RENDERERS.
       This will let the old and new yaml configurations coexist -->
-    <ANDROID_RENDERERS Condition="'$(ANDROID_RENDERERS)' == '' AND '$(CI)' == 'false'">FAST</ANDROID_RENDERERS>
-    <DefineConstants Condition="'$(ANDROID_RENDERERS)' == 'FAST'">$(DefineConstants);TEST_EXPERIMENTAL_RENDERERS</DefineConstants>
-    <DefineConstants Condition="'$(ANDROID_RENDERERS)' == 'PREAPPCOMPAT'">$(DefineConstants);FORMS_APPLICATION_ACTIVITY</DefineConstants>
-    <DefineConstants Condition="'$(ANDROID_RENDERERS)' == 'LEGACY'">$(DefineConstants)</DefineConstants>
+    <ANDROID_RENDERERS Condition="'$(ANDROID_RENDERERS)' == ''">FAST</ANDROID_RENDERERS>
+    <DefineConstants Condition="'$(ANDROID_RENDERERS)' == 'FAST'">$(DefineConstants)</DefineConstants>
+    <DefineConstants Condition="'$(ANDROID_RENDERERS)' == 'LEGACY'">$(DefineConstants);LEGACY_RENDERERS</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
     <DefineConstants>$(DefineConstants);HAVE_OPENTK</DefineConstants>
