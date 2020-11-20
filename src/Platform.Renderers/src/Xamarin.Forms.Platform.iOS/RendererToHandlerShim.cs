@@ -3,8 +3,9 @@ using Xamarin.Platform;
 using IView = Xamarin.Platform.IView;
 using AbstractViewHandler = Xamarin.Platform.Handlers.AbstractViewHandler<Xamarin.Platform.IView, UIKit.UIView>;
 using UIKit;
+using Xamarin.Forms.Platform.iOS;
 
-namespace Xamarin.Forms.Platform.iOS
+namespace Xamarin.Forms
 {
 	public class RendererToHandlerShim : AbstractViewHandler
 	{
@@ -81,7 +82,7 @@ namespace Xamarin.Forms.Platform.iOS
 			if(VisualElementRenderer == null)
 			{
 				var renderer = Internals.Registrar.Registered.GetHandlerForObject<IVisualElementRenderer>(view)
-										   ?? new Platform.DefaultRenderer();
+										   ?? new Xamarin.Forms.Platform.iOS.Platform.DefaultRenderer();
 
 				SetupRenderer(renderer);
 			}
